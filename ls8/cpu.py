@@ -64,18 +64,6 @@ class CPU:
             print(f"{sys.argv[0]}: {sys.argv[1]} file was not found")
             sys.exit(2)
 
-        # For now, we've just hardcoded a program:
-
-        program = [
-            # From print8.ls8
-            0b10000010,  # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111,  # PRN R0
-            0b00000000,
-            0b00000001,  # HLT
-        ]
-
         for instruction in program:
             self.ram[address] = instruction
             address += 1
@@ -88,6 +76,22 @@ class CPU:
         # elif op == "SUB": etc
         else:
             raise Exception("Unsupported ALU operation")
+
+    # Halt the CPU (and exit the emulator).
+    def handle_HLT(self):
+        self.running = False
+
+    # Set the value of a register to an integer.
+    def handle_LDI(self):
+        operand_a = self.ram_read(self.pc + 1)
+        operand_b = self.ram_read(self.pc + 2)
+        self.reg[operand_a] = operand_b
+
+    # Print to the console the decimal integer
+    # value that is stored in the given register.
+    def handle_PRN(self):
+        reg_num = self.ram_read(self.pc + 1)
+        print(self.reg[reg_num])
 
     def trace(self):
         """
