@@ -3,9 +3,9 @@
 import sys
 
 # optcode
-HLT = 0b00000001    # Halt
 LDI = 0b10000010    # Set value of a reg to an int
 PRN = 0b01000111    # Print
+HLT = 0b00000001    # Halt
 
 
 class CPU:
@@ -25,9 +25,9 @@ class CPU:
 
         # set up branch table
         self.branchtable = {}
-        self.branchtable[HLT] = self.handle_HLT
         self.branchtable[LDI] = self.handle_LDI
         self.branchtable[PRN] = self.handle_PRN
+        self.branchtable[HLT] = self.handle_HLT
 
         # stp 2 add RAM functions
      # takes the given address and reads and returns the value at that address.
@@ -73,10 +73,6 @@ class CPU:
         else:
             raise Exception("Unsupported ALU operation")
 
-    # Halt the CPU (and exit the emulator).
-    def handle_HLT(self):
-        self.running = False
-
     # Set the value of a register to an integer.
     def handle_LDI(self):
         operand_a = self.ram_read(self.pc + 1)
@@ -88,6 +84,11 @@ class CPU:
     def handle_PRN(self):
         reg_num = self.ram_read(self.pc + 1)
         print(self.reg[reg_num])
+
+    # Halt the CPU (and exit the emulator).
+
+    def handle_HLT(self):
+        self.running = False
 
     def trace(self):
         """
