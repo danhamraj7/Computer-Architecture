@@ -64,10 +64,6 @@ class CPU:
             print(f"{sys.argv[0]}: {sys.argv[1]} file was not found")
             sys.exit(2)
 
-        for instruction in program:
-            self.ram[address] = instruction
-            address += 1
-
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
 
@@ -115,4 +111,9 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        pass
+        while self.running:
+            ir = self.ram_read(self.pc)
+            self.branchtable[ir]()
+            if ir == 0 or None:
+                print(f"Unknown Instruction: {ir}")
+                sys.exit()
