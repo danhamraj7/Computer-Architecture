@@ -11,20 +11,58 @@ PRN = 0b01000111    # Print
 class CPU:
     """Main CPU class."""
 
-    # 256 bytes memory
-    self.ram = [0] * 256
-    # 8 registers
-    self.reg = [0] * 8
-    # program counter
-    # starts with 0
-    # # keeps track of where we are in memory  Stp #1
-    self.pc = 0
-    self.running = True
+    def __init__(self):
+        """Construct a new CPU."""
+        # 256 bytes memory
+        self.ram = [0] * 256
+        # 8 registers
+        self.reg = [0] * 8
+        # program counter
+        # starts with 0
+        # # keeps track of where we are in memory  Stp #1
+        self.pc = 0
+        self.running = True
+
+        # set up branch table
+        self.branchtable = {}
+        self.branchtable[HLT] = self.handle_HLT
+        self.branchtable[LDI] = self.handle_LDI
+        self.branchtable[PRN] = self.handle_PRN
+
+        # stp 2 add RAM functions
+     # takes the given address and reads and returns the value at that address.
+
+    def ram_read(self, mar):
+        return self.ram[mar]
+
+    # takes the given address and writes the value at that given address
+    def ram_write(self, mar, mdr):
+        self.ram[mar] = mdr
 
     def load(self):
         """Load a program into memory."""
 
         address = 0
+
+        # If there are less than 2 arguments entered, return error
+        if len(sys.argv) != 2:
+            print("Usage: comp.py program_name")
+            sys.exit(1)
+
+        # Otherwise, go on with the load method
+        try:
+            with open(sys.argv[1]) as file:
+                for line in file:
+                    split_line = line.split("#")[0]
+                    command = split_line.strip()
+                    if command == "":
+                        continue
+                    instruction = int(command, 2)
+                    self.ram[address] = instruction
+                    address += 1
+        except FileNotFoundError:
+            print(f"{sys.argv[0]}: {sys.argv[1]} file was not found")
+            sys.exit(2)
 
         # For now, we've just hardcoded a program:
 
