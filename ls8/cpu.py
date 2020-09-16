@@ -7,6 +7,8 @@ import sys
 LDI = 0b10000010    # Set value of a reg to an int
 PRN = 0b01000111    # Print
 HLT = 0b00000001    # Halt
+PUSH = 0b01000101   # Push
+POP = 0b01000110    # Pop
 
 
 """ALU"""
@@ -24,6 +26,8 @@ class CPU:
         self.ram = [0] * 256
         # 8 registers
         self.reg = [0] * 8
+        # Stack pointer
+        self.reg[7] = 0xF4
         # program counter
         # starts with 0
         # # keeps track of where we are in memory  Stp #1
@@ -37,6 +41,8 @@ class CPU:
         self.branchtable[HLT] = self.HLT        # Halt
         self.branchtable[LDI] = self.LDI        # Set value of a reg to an int
         self.branchtable[PRN] = self.PRN        # Print
+        self.branchtable[PUSH] = self.PUSH      # Push
+        self.branchtable[POP] = self.POP        # Pop
 
         self.branchtable[ADD] = self.ADD        # Add
         self.branchtable[SUB] = self.SUB        # Subtract
@@ -49,7 +55,7 @@ class CPU:
 
         # If there are less than 2 arguments entered, return error
         if len(sys.argv) < 2:
-            print("Usage: comp.py program_name")
+            print("In correct amount of arguments")
             sys.exit(1)
 
         # load method
@@ -161,6 +167,34 @@ class CPU:
     def PRN(self):
         address = self.ram[self.pc + 1]
         print(self.ram_read(address))
+        self.pc += 2
+
+    def PUSH(self):
+        # Decrement the stack pointer
+        self.reg[7] -= 1
+        # Get the register num to push
+        reg_num = self.ram[self.pc + 1]
+        # get the value to push
+        value = self.reg[reg_num]
+        # copy the value to the sp addtess
+        top_of_stack_address = self.reg[7]
+        # Push the value from the register to the RAM
+        self.ram[top_of_stack_address] = value
+        # Increment the pc by 2 (2-bit operation)
+        self.pc += 2
+
+    def POP(self):
+        # Point at the top of the stack
+        top_of_stack_address = self.reg[7]
+        # get the top of the stack address
+        value = self.ram[top_of_stack_address]
+        # get the reg to pop into
+        reg_num = self.ram[self.pc + 1]
+        # store the value at that register
+        self.reg[reg_num] = value
+        # Increment the stack pointer
+        self.reg[7] += 1
+        # Increment the pc
         self.pc += 2
 
     def ADD(self):

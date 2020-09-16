@@ -10,5 +10,3 @@ cpu = CPU()
 
 cpu.load()
 cpu.run()
-
-#print("the name of the file:", sys.argv[0])
