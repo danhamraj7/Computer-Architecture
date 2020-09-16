@@ -90,21 +90,23 @@ class CPU:
 
         # If the address is zero, return error and exit
         if address == 0:
-            print("Program was empty!")
+            print("Program was not found")
             sys.exit(3)
 
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
 
-        # Add the value in two registers and
+        # Add the registers
         # store the result in registerA.
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
-        # Subtract the value in the second register from the first,
-        # storing the result in registerA.
+
+        # Sub the registers
+        # store the result in registerA.
         elif op == "SUB":
             self.reg[reg_a] -= self.reg[reg_b]
-        # Multiply the values in two registers together and
+
+        # Multiply the registers
         # store the result in registerA.
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
@@ -135,22 +137,15 @@ class CPU:
     """
     ---------- Ram functions ----------
     """
+    # takes the given address and reads and returns the value at that address.
 
     def ram_read(self, MAR):
-        # Address = MAR = Memory Address Register:
-        # holds the memory address we're reading or writing
-        # This returns the register at the parameter address
         return self.reg[MAR]
 
+    # takes the given address and writes the value at that given address
     def ram_write(self, MDR, MAR):
-        # Value = MDR = Memory Data Register:
-        # holds the value to write or the value just read
-        # This sets the parameter value (MDR) at the parameter address in memory (MAR)
         self.reg[MAR] = MDR
 
-    """
-    ---------- Instruction functions ----------
-    """
     # Halt the CPU (and exit the emulator)
 
     def HLT(self):
@@ -158,79 +153,48 @@ class CPU:
 
     # Set the value of a register to an integer
     def LDI(self):
-        # Set and store the address (+1 bit) and value (+1 bit) in ram
         address = self.ram[self.pc + 1]
         value = self.ram[self.pc + 2]
-        # Run the ram_write helper function with the current
-        # address/value as parameters
         self.ram_write(value, address)
-        # Increment the pc by 3
-        # because this is a 3-bit operation
         self.pc += 3
 
-    # Print to the console the decimal integer value
-    # that is stored in the given register.
+    # Print to the console the decimal integer
+    # value that is stored in the given register.
     def PRN(self):
-        # Set the address stored in ram (1 bit)
         address = self.ram[self.pc + 1]
-        # Run the ram_read helper function with
-        # the current address and print it
         print(self.ram_read(address))
-        # Increment the pc by 2 (2-bit operation)
         self.pc += 2
 
-    """
-    ---------- ALU functions ----------
-    """
-    # Add the value in two registers and
-    # store the result in registerA.
-
     def ADD(self):
-        # Set and store the first and second parameter values in ram
         reg_a = self.ram[self.pc + 1]
         reg_b = self.ram[self.pc + 2]
-        # Call the ALU method and pass it the operation and values
         self.alu("ADD", reg_a, reg_b)
-        # Increment the pc by 3 (3-bit operation)
         self.pc += 3
 
-    # Subtract the value in the second register from the first,
-    # storing the result in registerA.
     def SUB(self):
-        # Set and store the first and second parameter values in ram
         reg_a = self.ram[self.pc + 1]
         reg_b = self.ram[self.pc + 2]
-        # Call the ALU method and pass it the operation and values
         self.alu("SUB", reg_a, reg_b)
-        # Increment the pc by 3 (3-bit operation)
         self.pc += 3
 
-    # Multiply the values in two registers together and
-    # store the result in registerA.
     def MUL(self):
-        # Set and store the first and second parameter values in ram
         reg_a = self.ram[self.pc + 1]
         reg_b = self.ram[self.pc + 2]
-        # Call the ALU method and pass it the operation and values
         self.alu("MUL", reg_a, reg_b)
-        # Increment the pc by 3 (3-bit operation)
         self.pc += 3
-
-    """
-    ---------- Run the CPU ----------
-    """
 
     def run(self):
-        # Start the program
+        # program started
         self.running = True
 
         while self.running:
-            # Read the memory address that's stored in the register's PC
-            # And store the result in the Instruction Register (ir)
+            # Read the memory address from the register's PC
+            # store what is read in the ir (instruction register)
             ir = self.ram[self.pc]
 
             if ir and 0b00010000 == 0:
                 self.pc += (ir >> 6) + 1
             else:
-                # Find the ir method in the branchtable and execute it
+                # locate the ir methods from branchtable
+                # run the method
                 self.branchtable[ir]()
