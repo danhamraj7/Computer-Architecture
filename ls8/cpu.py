@@ -2,6 +2,7 @@
 
 import sys
 
+
 # optcode
 LDI = 0b10000010    # Set value of a reg to an int
 PRN = 0b01000111    # Print
@@ -27,7 +28,7 @@ class CPU:
         # starts with 0
         # # keeps track of where we are in memory  Stp #1
         self.pc = 0
-        # Boolean to start/stop the program
+        # start/stop the program
         self.running = False
 
         # Branch table
@@ -47,15 +48,15 @@ class CPU:
         address = 0
 
         # If there are less than 2 arguments entered, return error
-        if len(sys.argv) != 2:
+        if len(sys.argv) < 2:
             print("Usage: comp.py program_name")
             sys.exit(1)
 
-        # Otherwise, go on with the load method
+        # load method
         try:
             # Open  file
             with open(sys.argv[1]) as file:
-                # Loop through the lines of file
+                # Loop through the file
                 for line in file:
                     # Remove all white space
                     line = line.strip()
@@ -83,12 +84,12 @@ class CPU:
                     # Increment the address by 1
                     address += 1
 
-        # Set an error to catch invalid file
+        # catch invalid file
         except FileNotFoundError:
-            print(f"Couldn't open {sys.argv[1]}")
+            print(f"Could not open {sys.argv[1]}")
             sys.exit(2)
 
-        # If the address is zero, return error and exit
+        # If the address is 0, return error and exit
         if address == 0:
             print("Program was not found")
             sys.exit(3)
@@ -134,9 +135,6 @@ class CPU:
 
         print()
 
-    """
-    ---------- Ram functions ----------
-    """
     # takes the given address and reads and returns the value at that address.
 
     def ram_read(self, MAR):

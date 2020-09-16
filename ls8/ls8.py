@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+
 """Main."""
 
 import sys
@@ -9,3 +10,5 @@ cpu = CPU()
 
 cpu.load()
 cpu.run()
+
+#print("the name of the file:", sys.argv[0])
