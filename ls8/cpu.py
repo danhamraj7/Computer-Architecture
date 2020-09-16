@@ -2,10 +2,10 @@
 
 import sys
 
-"""Instruction definitions"""
-HLT = 0b00000001    # Halt
+# optcode
 LDI = 0b10000010    # Set value of a reg to an int
 PRN = 0b01000111    # Print
+HLT = 0b00000001    # Halt
 
 
 """ALU"""
@@ -19,15 +19,17 @@ class CPU:
 
     def __init__(self):
         """Construct a new CPU."""
-        # Holds 256 bytes of memory
+        # 256 bytes memory
         self.ram = [0] * 256
-        # 8 general-purpose registors
+        # 8 registers
         self.reg = [0] * 8
-
-        # Program Counter: the index into memory of the currently-executing instruction
+        # program counter
+        # starts with 0
+        # # keeps track of where we are in memory  Stp #1
         self.pc = 0
         # Boolean to start/stop the program
         self.running = False
+
         # Branch table
         self.branchtable = {}
         # Instruction branches
@@ -51,32 +53,29 @@ class CPU:
 
         # Otherwise, go on with the load method
         try:
-            # Open the file entered
-            with open(sys.argv[1]) as f:
-                # Loop through the lines in the file
-                for line in f:
+            # Open  file
+            with open(sys.argv[1]) as file:
+                # Loop through the lines of file
+                for line in file:
                     # Remove all white space
                     line = line.strip()
-                    # Split into a workable list
+                    # Split into a temp file
                     temp = line.split()
 
-                    # Bypass blank lines
+                    # handle blank lines
                     if len(temp) == 0:
                         continue
 
-                    # Bypass comments
+                    # handle comments
                     if temp[0][0] == '#':
                         continue
 
-                    # Now that the file is cleaned up and
-                    # the unneccesary stuff is bypassed,
-                    # continue with the load process
+                    # files are cleaned continue
                     try:
-                        # Set the address of the ram to be
-                        # JUST the binary part of the file
+                        # Set the address of the ram
                         self.ram[address] = int(temp[0], 2)
 
-                    # Set an error to catch invalid numbers
+                    # error handler
                     except ValueError:
                         print(f"Invalid number: {temp[0]}")
                         sys.exit(1)
