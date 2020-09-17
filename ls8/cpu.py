@@ -7,8 +7,12 @@ import sys
 LDI = 0b10000010    # Set value of a reg to an int
 PRN = 0b01000111    # Print
 HLT = 0b00000001    # Halt
+
 PUSH = 0b01000101   # Push
 POP = 0b01000110    # Pop
+
+CALL = 0b01010000   # Call
+RET = 0b00010001    # Return
 
 
 """ALU"""
@@ -43,6 +47,9 @@ class CPU:
         self.branchtable[PRN] = self.PRN        # Print
         self.branchtable[PUSH] = self.PUSH      # Push
         self.branchtable[POP] = self.POP        # Pop
+
+        self.branchtable[CALL] = self.CALL      # Call
+        self.branchtable[RET] = self.RET        # Return
 
         self.branchtable[ADD] = self.ADD        # Add
         self.branchtable[SUB] = self.SUB        # Subtract
@@ -196,6 +203,28 @@ class CPU:
         self.reg[7] += 1
         # Increment the pc
         self.pc += 2
+
+    # Calls a subroutine (function) at the address stored in the register
+
+    def CALL(self):
+        # Push return address
+        ret_address = self.pc + 2
+        # Decrement the stack pointer
+        self.reg[7] -= 1
+        self.ram[self.reg[7]] = ret_address
+        # Set the PC to the address stored in the given register
+        regnum = self.ram[self.pc + 1]
+        subroutine_address = self.reg[regnum]
+        self.pc = subroutine_address
+
+    # Pop the value from the top of the stack and store it in the PC
+
+    def RET(self):
+        # Pop the return addr off the stack
+        ret_address = self.ram[self.reg[7]]
+        self.reg[7] += 1
+        # Set the PC to it
+        self.pc = ret_address
 
     def ADD(self):
         reg_a = self.ram[self.pc + 1]
