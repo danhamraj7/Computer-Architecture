@@ -213,8 +213,8 @@ class CPU:
         self.reg[7] -= 1
         self.ram[self.reg[7]] = ret_address
         # Set the PC to the address stored in the given register
-        regnum = self.ram[self.pc + 1]
-        subroutine_address = self.reg[regnum]
+        reg_num = self.ram[self.pc + 1]
+        subroutine_address = self.reg[reg_num]
         self.pc = subroutine_address
 
     # Pop the value from the top of the stack and store it in the PC
