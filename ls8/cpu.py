@@ -184,7 +184,7 @@ class CPU:
         self.pc += 2
 
     def POP(self):
-        # Point at the top of the stack
+        # Point to the top of the stack
         top_of_stack_address = self.reg[7]
         # get the top of the stack address
         value = self.ram[top_of_stack_address]
