@@ -26,6 +26,7 @@ CMP = 0b10100111    # Compare
 
 """ Bitwise"""
 AND = 0b10101000    # AND
+OR = 0b10101010    # OR
 
 
 class CPU:
@@ -71,6 +72,7 @@ class CPU:
 
         #                                       # bitwise
         self.branchtable[AND] = self.AND        # AND
+        self.branchtable[OR] = self.OR          # OR
 
     def load(self):
         """Load a program into memory."""
@@ -156,6 +158,8 @@ class CPU:
             # ********************************************
             elif op == "AND":
                 self.reg[reg_a] &= self.reg[reg_b]
+            elif op == "OR":
+                self.reg[reg_a] |= self.reg[reg_b]
 
         else:
             raise Exception("Unsupported ALU operation")
@@ -335,6 +339,14 @@ class CPU:
         # Call the ALU method and pass in the parameters
         self.alu("AND", reg_a, reg_b)
         # Increment the pc
+        self.pc += 3
+
+     # Perform a bitwise-OR between the values in registerA and registerB,
+     # storing the result in registerA.
+    def OR(self):
+        reg_a = self.ram[self.pc + 1]
+        reg_b = self.ram[self.pc + 2]
+        self.alu("OR", reg_a, reg_b)
         self.pc += 3
 
     def run(self):
