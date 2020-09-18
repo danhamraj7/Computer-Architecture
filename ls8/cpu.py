@@ -28,6 +28,7 @@ CMP = 0b10100111    # Compare
 AND = 0b10101000    # AND
 OR = 0b10101010     # OR
 XOR = 0b10101011    # XOR
+NOT = 0b01101001    # NOT
 
 
 class CPU:
@@ -75,6 +76,7 @@ class CPU:
         self.branchtable[AND] = self.AND        # AND
         self.branchtable[OR] = self.OR          # OR
         self.branchtable[XOR] = self.XOR        # XOR
+        self.branchtable[NOT] = self.NOT        # NOT
 
     def load(self):
         """Load a program into memory."""
@@ -164,6 +166,8 @@ class CPU:
                 self.reg[reg_a] |= self.reg[reg_b]
             elif op == "XOR":
                 self.reg[reg_a] ^= self.reg[reg_b]
+            elif op == "NOT":
+                self.reg[reg_a] = ~(self.reg[reg_a])
 
         else:
             raise Exception("Unsupported ALU operation")
@@ -354,6 +358,14 @@ class CPU:
         reg_a = self.ram[self.pc + 1]
         reg_b = self.ram[self.pc + 2]
         self.alu("XOR", reg_a, reg_b)
+        self.pc += 3
+
+    # Perform a bitwise-NOT on the value in a register,
+    # storing the result in the register.
+    def NOT(self):
+        reg_a = self.ram[self.pc + 1]
+        reg_b = self.ram[self.pc + 2]
+        self.alu("NOT", reg_a, reg_b)
         self.pc += 3
 
     def run(self):
