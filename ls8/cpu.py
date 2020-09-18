@@ -30,6 +30,7 @@ OR = 0b10101010     # OR
 XOR = 0b10101011    # XOR
 NOT = 0b01101001    # NOT
 SHL = 0b10101100    # SHL -Shift bits left
+SHR = 0b10101101    # SHR -Shift bits right
 
 
 class CPU:
@@ -79,6 +80,7 @@ class CPU:
         self.branchtable[XOR] = self.XOR        # XOR
         self.branchtable[NOT] = self.NOT        # NOT
         self.branchtable[SHL] = self.SHL        # SHL - shift bits left
+        self.branchtable[SHR] = self.SHR        # SHR - shift bits right
 
     def load(self):
         """Load a program into memory."""
@@ -172,6 +174,8 @@ class CPU:
                 self.reg[reg_a] = ~(self.reg[reg_a])
             elif op == "SHL":
                 self.reg[reg_a] = (self.reg[reg_a] << self.reg[reg_b])
+            elif op == "SHR":
+                self.reg[reg_a] = (self.reg[reg_a] >> self.reg[reg_b])
 
         else:
             raise Exception("Unsupported ALU operation")
@@ -378,6 +382,14 @@ class CPU:
         reg_a = self.ram[self.pc + 1]
         reg_b = self.ram[self.pc + 2]
         self.alu("SHL", reg_a, reg_b)
+        self.pc += 3
+
+    # Shift the value in registerA right by the number of bits specified in registerB
+    # filling the high bits with 0.
+    def SHR(self):
+        reg_a = self.ram[self.pc + 1]
+        reg_b = self.ram[self.pc + 2]
+        self.alu("SHR", reg_a, reg_b)
         self.pc += 3
 
     def run(self):
