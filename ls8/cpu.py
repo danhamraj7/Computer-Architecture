@@ -22,6 +22,7 @@ JNE = 0b01010110    # Jump - Not equal
 ADD = 0b10100000    # Add
 SUB = 0b10100001    # Subtract
 MUL = 0b10100010    # Multiply
+DIV = 0b10100011    # Divide
 CMP = 0b10100111    # Compare
 
 """ Bitwise"""
@@ -73,6 +74,7 @@ class CPU:
         self.branchtable[ADD] = self.ADD        # Add
         self.branchtable[SUB] = self.SUB        # Subtract
         self.branchtable[MUL] = self.MUL        # Multiply
+        self.branchtable[DIV] = self.DIV        # Divide
         self.branchtable[CMP] = self.CMP        # Compare
 
         #                                       # bitwise
@@ -154,6 +156,11 @@ class CPU:
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
 
+        elif op == "DIV":
+            self.reg[reg_a] /= self.reg[reg_b]
+
+        # Divide the value in the first register by the value in the second,
+        # storing the remainder of the result in registerA.
         elif op == "MOD":
             # If the value in the second register is 0
             if reg_b == 0:
@@ -304,6 +311,14 @@ class CPU:
         reg_a = self.ram[self.pc + 1]
         reg_b = self.ram[self.pc + 2]
         self.alu("MUL", reg_a, reg_b)
+        self.pc += 3
+
+    # Divide the value in the first register by the value in the second,
+    # storing the result in registerA.
+    def DIV(self):
+        reg_a = self.ram[self.pc + 1]
+        reg_b = self.ram[self.pc + 2]
+        self.alu("DIV", reg_a, reg_b)
         self.pc += 3
 
     # Compare the values in two registers
