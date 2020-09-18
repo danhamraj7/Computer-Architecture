@@ -14,6 +14,8 @@ POP = 0b01000110    # Pop
 CALL = 0b01010000   # Call
 RET = 0b00010001    # Return
 JMP = 0b01010100    # Jump
+JEQ = 0b01010101    # Jump - Equal
+JNE = 0b01010110    # Jump - Not equal
 
 
 """ALU"""
@@ -56,6 +58,8 @@ class CPU:
         self.branchtable[CALL] = self.CALL      # Call
         self.branchtable[RET] = self.RET        # Return
         self.branchtable[JMP] = self.JMP        # Jump
+        self.branchtable[JEQ] = self.JEQ        # Jump - Equal
+        self.branchtable[JNE] = self.JNE        # Jump - not equal
 
         self.branchtable[ADD] = self.ADD        # Add
         self.branchtable[SUB] = self.SUB        # Subtract
@@ -282,6 +286,35 @@ class CPU:
         memory_address = self.ram[self.pc + 1]
         # set the pc to the address
         self.pc = self.reg[memory_address]
+
+    # If equal flag is set (true), jump to the address stored in the given register.
+    def JEQ(self):
+        # From the ALU if the flag is true
+        if self.FL[-1] == 1:
+            # Set the address to jump to
+            address = self.ram[self.pc + 1]
+            # set that address to that new address
+            new_address = self.reg[address]
+            # Now set the PC to the new address
+            self.pc = new_address
+        # If false, continue by incrementing the PC counter
+        else:
+            self.pc += 2
+
+    # If E flag is clear (false, 0), jump to the address stored in the given register.
+
+    def JNE(self):
+        # From the ALU if the flag is False
+        if self.FL[-1] == 0:
+            # Set the address to jump to
+            address = self.ram[self.pc + 1]
+            # set that address to that new address
+            new_address = self.reg[address]
+            # Now set the PC to the new address
+            self.pc = new_address
+         # If false, continue by incrementing the PC counter
+        else:
+            self.pc += 2
 
     def run(self):
         # program started
