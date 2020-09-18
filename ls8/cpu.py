@@ -347,21 +347,21 @@ class CPU:
     # If equal flag is set (true), jump to the address stored in the given register.
     def JEQ(self):
         # From the ALU if the flag is true
-        if self.FL == True:
+        if self.FL == 1:
             # Set the address to jump to
             address = self.ram[self.pc + 1]
             # set that address to that new address
             new_address = self.reg[address]
             # Now set the PC to the new address
             self.pc = new_address
-        # If false, continue by incrementing the PC counter
+            # If false, continue by incrementing the PC counter
         else:
             self.pc += 2
 
     # If E flag is clear (false, 0), jump to the address stored in the given register.
     def JNE(self):
         # From the ALU if the flag is False
-        if self.FL == False:
+        if self.FL == 0:
             # Set the address to jump to
             address = self.ram[self.pc + 1]
             # set that address to that new address
