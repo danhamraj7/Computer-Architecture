@@ -31,6 +31,7 @@ XOR = 0b10101011    # XOR
 NOT = 0b01101001    # NOT
 SHL = 0b10101100    # SHL -Shift bits left
 SHR = 0b10101101    # SHR -Shift bits right
+MOD = 0b10100100    # Modulus
 
 
 class CPU:
@@ -81,6 +82,7 @@ class CPU:
         self.branchtable[NOT] = self.NOT        # NOT
         self.branchtable[SHL] = self.SHL        # SHL - shift bits left
         self.branchtable[SHR] = self.SHR        # SHR - shift bits right
+        self.branchtable[MOD] = self.MOD        # Modulus
 
     def load(self):
         """Load a program into memory."""
@@ -151,6 +153,16 @@ class CPU:
         # store the result in registerA.
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
+
+        elif op == "MOD":
+            # If the value in the second register is 0
+            if reg_b == 0:
+                # Print an error message and halt.
+                print("Second value can not be 0")
+                sys.exit()
+            # else, do the modulus operation
+            else:
+                self.reg[reg_a] %= self.reg[reg_b]
 
         # Compare the values in two registers.
         elif op == "CMP":
@@ -390,6 +402,14 @@ class CPU:
         reg_a = self.ram[self.pc + 1]
         reg_b = self.ram[self.pc + 2]
         self.alu("SHR", reg_a, reg_b)
+        self.pc += 3
+
+    # Divide the value in the first register by the value in the second,
+    # storing the remainder of the result in registerA.
+    def MOD(self):
+        reg_a = self.ram[self.pc + 1]
+        reg_b = self.ram[self.pc + 2]
+        self.alu("MOD", reg_a, reg_b)
         self.pc += 3
 
     def run(self):
