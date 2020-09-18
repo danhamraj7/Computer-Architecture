@@ -48,7 +48,7 @@ class CPU:
         self.reg[7] = 0xF4
         # flags: holds current flags status, change on operands given to the CMP,
         # 8 bits register, If a particular bit is set, that flag is "true".
-        self.FL = [0] * 8
+        self.FL = 0b00000000  # all FLags set to false on initialization
         # program counter
         # starts with 0
         # keeps track of where we are in memory  Stp #1
@@ -172,29 +172,34 @@ class CPU:
                 self.reg[reg_a] %= self.reg[reg_b]
 
         # Compare the values in two registers.
+
         elif op == "CMP":
-            # If equal, set E to true (1)
+            # If equal, set E
             if self.reg[reg_a] == self.reg[reg_b]:
-                self.FL[-1] = 1
-            # If a > b, set G to true (1)
+                self.FL = 0b00000001
+            # If a > b, set G
             elif self.reg[reg_a] > self.reg[reg_b]:
-                self.FL[-2] = 1
-            # If a < b, set L to true (1)
+                self.FL = 0b00000010
+            # If a < b, set L
             elif self.reg[reg_a] < self.reg[reg_b]:
-                self.FL[-3] = 1
+                self.FL = 0b00000100
+            else:
+
+                self.FL = 0b00000000
+
             # ********************************************
-            elif op == "AND":
-                self.reg[reg_a] &= self.reg[reg_b]
-            elif op == "OR":
-                self.reg[reg_a] |= self.reg[reg_b]
-            elif op == "XOR":
-                self.reg[reg_a] ^= self.reg[reg_b]
-            elif op == "NOT":
-                self.reg[reg_a] = ~(self.reg[reg_a])
-            elif op == "SHL":
-                self.reg[reg_a] = (self.reg[reg_a] << self.reg[reg_b])
-            elif op == "SHR":
-                self.reg[reg_a] = (self.reg[reg_a] >> self.reg[reg_b])
+        elif op == "AND":
+            self.reg[reg_a] &= self.reg[reg_b]
+        elif op == "OR":
+            self.reg[reg_a] |= self.reg[reg_b]
+        elif op == "XOR":
+            self.reg[reg_a] ^= self.reg[reg_b]
+        elif op == "NOT":
+            self.reg[reg_a] = ~(self.reg[reg_a])
+        elif op == "SHL":
+            self.reg[reg_a] = (self.reg[reg_a] << self.reg[reg_b])
+        elif op == "SHR":
+            self.reg[reg_a] = (self.reg[reg_a] >> self.reg[reg_b])
 
         else:
             raise Exception("Unsupported ALU operation")
@@ -342,7 +347,7 @@ class CPU:
     # If equal flag is set (true), jump to the address stored in the given register.
     def JEQ(self):
         # From the ALU if the flag is true
-        if self.FL[-1] == 1:
+        if self.FL == True:
             # Set the address to jump to
             address = self.ram[self.pc + 1]
             # set that address to that new address
@@ -356,7 +361,7 @@ class CPU:
     # If E flag is clear (false, 0), jump to the address stored in the given register.
     def JNE(self):
         # From the ALU if the flag is False
-        if self.FL[-1] == 0:
+        if self.FL == False:
             # Set the address to jump to
             address = self.ram[self.pc + 1]
             # set that address to that new address
