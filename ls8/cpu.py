@@ -13,6 +13,7 @@ POP = 0b01000110    # Pop
 
 CALL = 0b01010000   # Call
 RET = 0b00010001    # Return
+JMP = 0b01010100    # Jump
 
 
 """ALU"""
@@ -54,6 +55,7 @@ class CPU:
 
         self.branchtable[CALL] = self.CALL      # Call
         self.branchtable[RET] = self.RET        # Return
+        self.branchtable[JMP] = self.JMP        # Jump
 
         self.branchtable[ADD] = self.ADD        # Add
         self.branchtable[SUB] = self.SUB        # Subtract
@@ -272,6 +274,14 @@ class CPU:
         self.alu("CMP", reg_a, reg_b)
         # Increment the pc
         self.pc += 3
+
+     # Set the PC to the address stored in the given register
+     # Jump to the address stored in the given register.
+    def JMP(self):
+        # get the address from the memory
+        memory_address = self.ram[self.pc + 1]
+        # set the pc to the address
+        self.pc = self.reg[memory_address]
 
     def run(self):
         # program started
