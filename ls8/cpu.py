@@ -26,7 +26,8 @@ CMP = 0b10100111    # Compare
 
 """ Bitwise"""
 AND = 0b10101000    # AND
-OR = 0b10101010    # OR
+OR = 0b10101010     # OR
+XOR = 0b10101011    # XOR
 
 
 class CPU:
@@ -73,6 +74,7 @@ class CPU:
         #                                       # bitwise
         self.branchtable[AND] = self.AND        # AND
         self.branchtable[OR] = self.OR          # OR
+        self.branchtable[XOR] = self.XOR        # XOR
 
     def load(self):
         """Load a program into memory."""
@@ -160,6 +162,8 @@ class CPU:
                 self.reg[reg_a] &= self.reg[reg_b]
             elif op == "OR":
                 self.reg[reg_a] |= self.reg[reg_b]
+            elif op == "XOR":
+                self.reg[reg_a] ^= self.reg[reg_b]
 
         else:
             raise Exception("Unsupported ALU operation")
@@ -185,7 +189,6 @@ class CPU:
         print()
 
     # takes the given address and reads and returns the value at that address.
-
     def ram_read(self, MAR):
         return self.reg[MAR]
 
@@ -194,7 +197,6 @@ class CPU:
         self.reg[MAR] = MDR
 
     # Halt the CPU (and exit the emulator)
-
     def HLT(self):
         self.running = False
 
@@ -241,7 +243,6 @@ class CPU:
         self.pc += 2
 
     # Calls a subroutine (function) at the address stored in the register
-
     def CALL(self):
         # Push return address on the stack
         ret_address = self.pc + 2
@@ -255,7 +256,6 @@ class CPU:
         self.pc = subroutine_address
 
     # Pop the value from the top of the stack and store it in the PC
-
     def RET(self):
         # Pop the return addr off the stack
         ret_address = self.ram[self.reg[7]]
@@ -292,8 +292,8 @@ class CPU:
         # Increment the pc
         self.pc += 3
 
-     # Set the PC to the address stored in the given register
-     # Jump to the address stored in the given register.
+    # Set the PC to the address stored in the given register
+    # Jump to the address stored in the given register.
     def JMP(self):
         # get the address from the memory
         memory_address = self.ram[self.pc + 1]
@@ -315,7 +315,6 @@ class CPU:
             self.pc += 2
 
     # If E flag is clear (false, 0), jump to the address stored in the given register.
-
     def JNE(self):
         # From the ALU if the flag is False
         if self.FL[-1] == 0:
@@ -330,8 +329,8 @@ class CPU:
             self.pc += 2
 
         # ***********************************************
-        # Bitwise-AND the values in registerA and registerB,
-        # then store the result in registerA.
+    # Bitwise-AND the values in registerA and registerB,
+    # then store the result in registerA.
     def AND(self):
         # Set and store the parameters  in ram
         reg_a = self.ram[self.pc + 1]
@@ -341,12 +340,20 @@ class CPU:
         # Increment the pc
         self.pc += 3
 
-     # Perform a bitwise-OR between the values in registerA and registerB,
-     # storing the result in registerA.
+    # Perform a bitwise-OR between the values in registerA and registerB,
+    # storing the result in registerA.
     def OR(self):
         reg_a = self.ram[self.pc + 1]
         reg_b = self.ram[self.pc + 2]
         self.alu("OR", reg_a, reg_b)
+        self.pc += 3
+
+    # Perform a bitwise-XOR between the values in registerA and registerB,
+    # storing the result in registerA.
+    def XOR(self):
+        reg_a = self.ram[self.pc + 1]
+        reg_b = self.ram[self.pc + 2]
+        self.alu("XOR", reg_a, reg_b)
         self.pc += 3
 
     def run(self):
