@@ -24,6 +24,9 @@ SUB = 0b10100001    # Subtract
 MUL = 0b10100010    # Multiply
 CMP = 0b10100111    # Compare
 
+""" Bitwise"""
+AND = 0b10101000    # AND
+
 
 class CPU:
     """Main CPU class."""
@@ -65,6 +68,9 @@ class CPU:
         self.branchtable[SUB] = self.SUB        # Subtract
         self.branchtable[MUL] = self.MUL        # Multiply
         self.branchtable[CMP] = self.CMP        # Compare
+
+        #                                       # bitwise
+        self.branchtable[AND] = self.AND        # AND
 
     def load(self):
         """Load a program into memory."""
@@ -147,6 +153,9 @@ class CPU:
             # If a < b, set L to true (1)
             elif self.reg[reg_a] < self.reg[reg_b]:
                 self.FL[-3] = 1
+            # ********************************************
+            elif op == "AND":
+                self.reg[reg_a] &= self.reg[reg_b]
 
         else:
             raise Exception("Unsupported ALU operation")
@@ -315,6 +324,18 @@ class CPU:
          # If false, continue by incrementing the PC counter
         else:
             self.pc += 2
+
+        # ***********************************************
+        # Bitwise-AND the values in registerA and registerB,
+        # then store the result in registerA.
+    def AND(self):
+        # Set and store the parameters  in ram
+        reg_a = self.ram[self.pc + 1]
+        reg_b = self.ram[self.pc + 2]
+        # Call the ALU method and pass in the parameters
+        self.alu("AND", reg_a, reg_b)
+        # Increment the pc
+        self.pc += 3
 
     def run(self):
         # program started
