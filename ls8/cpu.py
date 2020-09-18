@@ -19,6 +19,7 @@ RET = 0b00010001    # Return
 ADD = 0b10100000    # Add
 SUB = 0b10100001    # Subtract
 MUL = 0b10100010    # Multiply
+CMP = 0b10100111    # Compare
 
 
 class CPU:
@@ -32,9 +33,12 @@ class CPU:
         self.reg = [0] * 8
         # Stack pointer
         self.reg[7] = 0xF4
+        # flags: holds current flags status, change on operands given to the CMP,
+        # 8 bits register, If a particular bit is set, that flag is "true".
+        self.FL = [0] * 8
         # program counter
         # starts with 0
-        # # keeps track of where we are in memory  Stp #1
+        # keeps track of where we are in memory  Stp #1
         self.pc = 0
         # start/stop the program
         self.running = False
@@ -54,6 +58,7 @@ class CPU:
         self.branchtable[ADD] = self.ADD        # Add
         self.branchtable[SUB] = self.SUB        # Subtract
         self.branchtable[MUL] = self.MUL        # Multiply
+        self.branchtable[CMP] = self.CMP        # Compare
 
     def load(self):
         """Load a program into memory."""
@@ -124,6 +129,18 @@ class CPU:
         # store the result in registerA.
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
+
+        # Compare the values in two registers.
+        elif op == "CMP":
+            # If equal, set E to true (1)
+            if self.reg[reg_a] == self.reg[reg_b]:
+                self.FL[-1] = 1
+            # If a > b, set G to true (1)
+            elif self.reg[reg_a] > self.reg[reg_b]:
+                self.FL[-2] = 1
+            # If a < b, set L to true (1)
+            elif self.reg[reg_a] < self.reg[reg_b]:
+                self.FL[-3] = 1
 
         else:
             raise Exception("Unsupported ALU operation")
@@ -207,11 +224,12 @@ class CPU:
     # Calls a subroutine (function) at the address stored in the register
 
     def CALL(self):
-        # Push return address
+        # Push return address on the stack
         ret_address = self.pc + 2
         # Decrement the stack pointer
         self.reg[7] -= 1
         self.ram[self.reg[7]] = ret_address
+        # call the subroutine
         # Set the PC to the address stored in the given register
         reg_num = self.ram[self.pc + 1]
         subroutine_address = self.reg[reg_num]
@@ -222,8 +240,9 @@ class CPU:
     def RET(self):
         # Pop the return addr off the stack
         ret_address = self.ram[self.reg[7]]
+        # increment the stack pointer
         self.reg[7] += 1
-        # Set the PC to it
+        # Set the PC to the return address
         self.pc = ret_address
 
     def ADD(self):
@@ -242,6 +261,16 @@ class CPU:
         reg_a = self.ram[self.pc + 1]
         reg_b = self.ram[self.pc + 2]
         self.alu("MUL", reg_a, reg_b)
+        self.pc += 3
+
+    # Compare the values in two registers
+    def CMP(self):
+        # Set and store the  parameters in the  ram
+        reg_a = self.ram[self.pc + 1]
+        reg_b = self.ram[self.pc + 2]
+        # call the alu fn and pass in the parameters
+        self.alu("CMP", reg_a, reg_b)
+        # Increment the pc
         self.pc += 3
 
     def run(self):
